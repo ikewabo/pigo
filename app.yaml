@@ -1,0 +1,30 @@
+runtime: python311
+env: standard
+instance_class: F1
+
+handlers:
+- url: /(.*\.css)
+  mime_type: text/css
+  static_files: \1
+  upload: .*\.css
+
+- url: /(.*\.js)
+  mime_type: text/javascript
+  static_files: \1
+  upload: .*\.js
+
+- url: /images/(.*\.(gif|png|jpg|jpeg|svg|mp4))$
+  static_files: images/\1
+  upload: images/.*\.(gif|png|jpg|jpeg|svg|mp4)$
+
+- url: /(.*\.(gif|png|jpg|jpeg|svg))$
+  static_files: \1
+  upload: .*\.(gif|png|jpg|jpeg|svg)$
+
+- url: /.*
+  static_files: index.html
+  upload: index\.html
+
+- url: /
+  static_files: index.html
+  upload: index\.html
