@@ -690,6 +690,26 @@ img {
 
 /* Basic mobile responsive */
 @media (max-width: 968px) {
+    .hero-glass-panel {
+        padding: 1.5rem;
+    }
+
+    .hero-title {
+        font-size: clamp(2rem, 8vw, 3rem);
+    }
+    
+    .hero-cta {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .hero-cta .btn {
+        width: 100%;
+        text-align: center;
+    }
+
     .hero-container {
         grid-template-columns: 1fr;
         text-align: center;
@@ -698,30 +718,12 @@ img {
 
     .hero-content {
         margin: 0 auto;
-        padding-top: 5rem;
+        padding-top: 2rem;
     }
 
     .hero-support {
         margin-left: auto;
         margin-right: auto;
-    }
-
-    .hero-cta {
-        justify-content: center;
-    }
-
-    .bottle-wrapper {
-        height: 50vh;
-    }
-
-    .nutrition-micro-card {
-        left: 0;
-        top: 0;
-    }
-
-    .quality-micro-card {
-        right: 0;
-        bottom: 10%;
     }
 
     .nav-links,
