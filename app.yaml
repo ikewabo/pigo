@@ -14,9 +14,9 @@ handlers:
   static_files: \1
   upload: .*\.js
 
-- url: /images/(.*\.(gif|png|jpg|jpeg|svg))$
+- url: /images/(.*\.(gif|png|jpg|jpeg|svg|mp4))$
   static_files: images/\1
-  upload: images/.*\.(gif|png|jpg|jpeg|svg)$
+  upload: images/.*\.(gif|png|jpg|jpeg|svg|mp4)$
 
 - url: /(.*\.(gif|png|jpg|jpeg|svg))$
   static_files: \1

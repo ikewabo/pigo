@@ -144,67 +144,28 @@ function createParticle(container) {
 }
 
 /**
- * Hero GIF Sequence Player
+ * Hero Video Player Logic
  */
 function initHeroGifSequence() {
-    const canvas = document.getElementById('hero-gif-canvas');
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    const totalFrames = 155;
-    const frames = [];
-    
-    function resizeCanvas() {
-        const dpr = window.devicePixelRatio || 1;
-        canvas.style.width = window.innerWidth + 'px';
-        canvas.style.height = window.innerHeight + 'px';
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    
-    // Preload frames
-    for (let i = 1; i <= totalFrames; i++) {
-        const img = new Image();
-        const frameNumber = i.toString().padStart(3, '0');
-        img.src = `images/hero_gif_frames/frame_${frameNumber}.gif`;
-        frames.push(img);
-    }
-    
-    let currentFrame = 0;
-    let loopCount = 0;
+    const video = document.getElementById('hero-bg-video');
+    if (!video) return;
+
+    let loops = 0;
     let revealed = false;
-    
-    function draw() {
-        const img = frames[currentFrame];
-        if (img && img.complete && img.naturalWidth > 0) {
-            const hRatio = canvas.width / img.naturalWidth;
-            const vRatio = canvas.height / img.naturalHeight;
-            const ratio = Math.max(hRatio, vRatio);
-            
-            const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
-            const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio);
-        }
+    let previousTime = 0;
+
+    video.addEventListener('timeupdate', () => {
+        const currentTime = video.currentTime;
         
-        if (currentFrame === totalFrames - 1) {
-            loopCount++;
-            if (loopCount === 2 && !revealed) {
+        // When the video loops, the currentTime drops back near 0
+        if (previousTime > 0 && currentTime < previousTime - 2) {
+            loops++;
+            if (loops >= 2 && !revealed) {
                 revealed = true;
                 const panel = document.querySelector('.hero-glass-panel');
                 if (panel) panel.classList.add('revealed');
             }
         }
-        
-        currentFrame = (currentFrame + 1) % totalFrames;
-        
-        setTimeout(() => {
-            requestAnimationFrame(draw);
-        }, 100);
-    }
-    
-    requestAnimationFrame(draw);
+        previousTime = currentTime;
+    });
 }
