@@ -1,3 +1,4 @@
+service: pigo-honeybees
 runtime: python311
 env: standard
 instance_class: F1

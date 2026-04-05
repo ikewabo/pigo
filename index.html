@@ -16,10 +16,8 @@
 </head>
 <body>
     <!-- Setup Background Video for immersive feel -->
-    <div class="site-bg-video-wrapper">
-        <video autoplay loop muted playsinline class="site-bg-video" poster="images/Honey_bee_bottle_label_191465143djpeg_d71789b7f1.jpeg">
-            <source src="images/Honeybee_in_darkness_rotating_delpmaspu_ -V1.mp4" type="video/mp4">
-        </video>
+    <div class="site-bg-video-wrapper" id="hero-gif-container">
+        <canvas id="hero-gif-canvas" class="site-bg-video"></canvas>
         <div class="site-bg-overlay"></div>
     </div>
     <div class="particles" id="particles"></div>
@@ -59,66 +57,30 @@
         <!-- Hero Section -->
         <section class="hero" id="hero">
             <div class="container hero-container">
-                <div class="hero-content" data-speed="0.1">
-                    <div class="badge-wrapper fade-up">
+                <div class="hero-content hero-glass-panel glass-panel" data-speed="0.1">
+                    <div class="badge-wrapper">
                         <span class="glass-badge">Premium Quality</span>
                     </div>
                     
-                    <h1 class="hero-title fade-up delay-1">
+                    <h1 class="hero-title">
                         100% Natural Honey,<br>
                         <span class="text-gold">Crafted by Nature</span>
                     </h1>
                     
-                    <p class="hero-subtitle fade-up delay-2">
+                    <p class="hero-subtitle">
                         Pure honey from PIGO HONEYBEES — carefully harvested, naturally preserved, and presented with premium quality for healthy living.
                     </p>
                     
-                    <p class="hero-support fade-up delay-3">
+                    <p class="hero-support">
                         Experience the richness of authentic honey made with care, tradition, and nature’s finest process. From hive to bottle, every drop is crafted to deliver purity, wellness, and exceptional taste.
                     </p>
                     
-                    <div class="hero-cta fade-up delay-4">
+                    <div class="hero-cta">
                         <a href="#products" class="btn btn-primary magnetic-btn">Shop Our Honey</a>
                         <a href="#about" class="btn btn-secondary magnetic-btn">Discover the Farm</a>
                     </div>
                 </div>
                 
-                <div class="hero-visual" data-speed="0.05">
-                    <div class="bottle-wrapper parallax-element">
-                        <div class="bottle-glow"></div>
-                        <img src="black__ultrapremium_photorealistic_4k_label.png" alt="Pigo Honeybees Premium Bottle" class="hero-bottle">
-                        
-                        <!-- Mini Nutrition Card -->
-                        <div class="nutrition-micro-card glass-panel floating-element delay-1">
-                            <div class="micro-header">
-                                <span class="micro-title">Purity Profile</span>
-                                <span class="micro-icon">✨</span>
-                            </div>
-                            <div class="micro-stats">
-                                <div class="stat-row">
-                                    <span>Added Sugar</span>
-                                    <span>0%</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span>Preservatives</span>
-                                    <span>0%</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span>Natural Energy</span>
-                                    <span>100%</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Mini Quality Card -->
-                        <div class="quality-micro-card glass-panel floating-element delay-2">
-                            <div class="micro-content">
-                                <span class="gold-text">Raw & Unfiltered</span>
-                                <p>Preserving natural pollen and enzymes.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <div class="scroll-indicator fade-in delay-5">
