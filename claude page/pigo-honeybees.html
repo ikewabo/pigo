@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIGO Honeybees — Live Healthy. Take Honey.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dim: #8B6E2A;
+    --black: #050505;
+    --deep: #0A0800;
+    --glass-bg: rgba(255,255,255,0.04);
+    --glass-border: rgba(201,168,76,0.2);
+    --glass-shine: rgba(255,255,255,0.07);
+    --amber: #D4860A;
+    --cream: #F5EDD6;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed; width:12px; height:12px;
+    background: var(--gold); border-radius:50%;
+    pointer-events: none; z-index:9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position:fixed; width:36px; height:36px;
+    border:1px solid rgba(201,168,76,0.5); border-radius:50%;
+    pointer-events:none; z-index:9998;
+    transform:translate(-50%,-50%);
+    transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    padding: 24px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(to bottom, rgba(5,5,5,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(0px);
+  }
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 13px; letter-spacing: 0.35em;
+    color: var(--gold); text-transform: uppercase;
+  }
+  .nav-links { display:flex; gap:40px; list-style:none; }
+  .nav-links a {
+    font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
+    color: rgba(245,237,214,0.6); text-decoration:none;
+    transition: color 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px;
+    background: var(--gold); transition: width 0.4s ease;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after { width:100%; }
+
+  /* HERO */
+  .hero {
+    position: relative; height: 100vh; min-height: 700px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Animated hexagon grid background */
+  .hex-grid {
+    position: absolute; inset:0; z-index:0;
+    background-image:
+      repeating-linear-gradient(60deg, transparent, transparent 30px, rgba(201,168,76,0.03) 30px, rgba(201,168,76,0.03) 31px),
+      repeating-linear-gradient(-60deg, transparent, transparent 30px, rgba(201,168,76,0.03) 30px, rgba(201,168,76,0.03) 31px),
+      repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(201,168,76,0.025) 30px, rgba(201,168,76,0.025) 31px);
+    animation: hexDrift 20s linear infinite;
+  }
+  @keyframes hexDrift {
+    0% { background-position: 0 0, 0 0, 0 0; }
+    100% { background-position: 60px 104px, -60px 104px, 0 60px; }
+  }
+
+  /* Amber orb glow */
+  .hero-orb {
+    position:absolute; z-index:1;
+    width:700px; height:700px;
+    background: radial-gradient(ellipse at center,
+      rgba(212,134,10,0.18) 0%,
+      rgba(201,168,76,0.08) 35%,
+      transparent 70%);
+    border-radius:50%;
+    animation: orbPulse 6s ease-in-out infinite;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+  }
+  @keyframes orbPulse {
+    0%,100% { transform:translate(-50%,-50%) scale(1); opacity:1; }
+    50% { transform:translate(-50%,-50%) scale(1.12); opacity:0.7; }
+  }
+
+  /* Floating particles */
+  .particles { position:absolute; inset:0; z-index:2; pointer-events:none; }
+  .particle {
+    position:absolute; border-radius:50%;
+    background: var(--gold-light);
+    animation: floatUp linear infinite;
+    opacity:0;
+  }
+  @keyframes floatUp {
+    0% { transform:translateY(0) scale(1); opacity:0; }
+    20% { opacity:0.6; }
+    80% { opacity:0.2; }
+    100% { transform:translateY(-120vh) scale(0.3); opacity:0; }
+  }
+
+  /* Hero content */
+  .hero-content {
+    position:relative; z-index:10;
+    text-align:center;
+    display: flex; flex-direction:column; align-items:center; gap:28px;
+  }
+
+  .hero-eyebrow {
+    font-family:'Jost', sans-serif;
+    font-size:11px; letter-spacing:0.5em; text-transform:uppercase;
+    color: var(--gold-dim);
+    animation: fadeUp 1.2s ease both;
+  }
+
+  .hero-title {
+    font-family:'Cinzel', serif;
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight:700; line-height:0.9;
+    color: var(--gold-light);
+    text-shadow: 0 0 80px rgba(201,168,76,0.4), 0 0 160px rgba(201,168,76,0.15);
+    animation: fadeUp 1.4s 0.2s ease both;
+  }
+  .hero-title span { display:block; }
+  .hero-title .sub { font-size:0.45em; letter-spacing:0.35em; font-weight:400; color: var(--gold-dim); }
+
+  .hero-tagline {
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size: clamp(18px, 2.5vw, 26px);
+    color: rgba(245,237,214,0.75);
+    animation: fadeUp 1.4s 0.4s ease both;
+  }
+
+  /* GLASS CARD — hero CTA */
+  .glass-pill {
+    display:inline-flex; gap:24px; align-items:center;
+    padding: 20px 48px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 100px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
+    animation: fadeUp 1.4s 0.6s ease both;
+  }
+  .btn-primary {
+    font-family:'Cinzel', serif;
+    font-size:11px; letter-spacing:0.3em; text-transform:uppercase;
+    color: var(--black); background: var(--gold);
+    border:none; padding:14px 32px; border-radius:100px;
+    cursor:none; transition: all 0.3s;
+    font-weight:600;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform:scale(1.03); }
+  .btn-ghost {
+    font-family:'Cinzel', serif;
+    font-size:11px; letter-spacing:0.3em; text-transform:uppercase;
+    color: var(--gold); background:transparent;
+    border: 1px solid rgba(201,168,76,0.4);
+    padding:14px 32px; border-radius:100px;
+    cursor:none; transition: all 0.3s;
+  }
+  .btn-ghost:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    z-index:10; animation: fadeIn 2s 1.5s ease both;
+  }
+  .scroll-hint span {
+    font-size:9px; letter-spacing:0.4em; text-transform:uppercase;
+    color: rgba(201,168,76,0.4);
+  }
+  .scroll-line {
+    width:1px; height:50px;
+    background: linear-gradient(to bottom, rgba(201,168,76,0.5), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%,100% { opacity:0.3; transform:scaleY(1); }
+    50% { opacity:1; transform:scaleY(1.2); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(30px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity:0; } to { opacity:1; }
+  }
+
+  /* ═══════════════════════════════════ SECTIONS ══ */
+  section { padding: 120px 60px; position:relative; }
+
+  .section-label {
+    font-size:10px; letter-spacing:0.5em; text-transform:uppercase;
+    color: var(--gold-dim); margin-bottom:16px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .section-label::before {
+    content:''; display:inline-block;
+    width:40px; height:1px; background: var(--gold-dim);
+  }
+
+  .section-title {
+    font-family:'Cinzel', serif;
+    font-size: clamp(32px, 4vw, 56px);
+    font-weight:600; color: var(--gold-light);
+    line-height:1.1; margin-bottom:24px;
+  }
+
+  .section-body {
+    font-family:'Cormorant Garamond', serif;
+    font-size: clamp(17px, 1.8vw, 21px);
+    line-height:1.8; color: rgba(245,237,214,0.75);
+  }
+
+  /* Divider */
+  .divider {
+    width:100%; height:1px;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent);
+    margin: 0;
+  }
+
+  /* ═══ SECTION 1: ABOUT THE FARM ══ */
+  .about {
+    background: linear-gradient(135deg, var(--deep) 0%, #0D0900 100%);
+    display: grid; grid-template-columns: 1fr 1fr; gap:80px; align-items:center;
+  }
+
+  .about-visual {
+    position:relative; display:flex; justify-content:center; align-items:center;
+  }
+
+  /* Glassmorphic product card */
+  .product-glass-card {
+    width:300px; height:420px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius:24px;
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    box-shadow:
+      0 40px 80px rgba(0,0,0,0.7),
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 0 60px rgba(201,168,76,0.08);
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    padding:40px; text-align:center;
+    animation: floatCard 8s ease-in-out infinite;
+    position:relative; overflow:hidden;
+  }
+  .product-glass-card::before {
+    content:''; position:absolute;
+    top:-50%; left:-50%; width:200%; height:200%;
+    background: conic-gradient(from 0deg at 50% 50%,
+      transparent 0deg,
+      rgba(201,168,76,0.05) 60deg,
+      transparent 120deg);
+    animation: cardRotate 12s linear infinite;
+  }
+  @keyframes cardRotate { to { transform:rotate(360deg); } }
+  @keyframes floatCard {
+    0%,100% { transform:translateY(0) rotate(-1deg); }
+    50% { transform:translateY(-16px) rotate(1deg); }
+  }
+
+  .card-bee-icon {
+    font-size:72px; margin-bottom:20px;
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.6));
+    animation: beeSway 4s ease-in-out infinite;
+  }
+  @keyframes beeSway {
+    0%,100% { transform:rotate(-5deg) scale(1); }
+    50% { transform:rotate(5deg) scale(1.05); }
+  }
+  .card-brand {
+    font-family:'Cinzel', serif;
+    font-size:20px; font-weight:700; color:var(--gold);
+    letter-spacing:0.1em; line-height:1.2; margin-bottom:8px;
+  }
+  .card-vol {
+    font-size:11px; letter-spacing:0.3em;
+    color: var(--gold-dim); margin-top:8px;
+  }
+  .card-badges {
+    display:flex; gap:8px; flex-wrap:wrap;
+    justify-content:center; margin-top:20px;
+  }
+  .badge {
+    font-size:8px; letter-spacing:0.2em; text-transform:uppercase;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-dim); padding:5px 12px; border-radius:100px;
+    background: rgba(201,168,76,0.05);
+  }
+
+  /* Orbiting rings */
+  .orbit-ring {
+    position:absolute; border-radius:50%;
+    border: 1px solid rgba(201,168,76,0.12);
+    animation: orbit linear infinite;
+  }
+  @keyframes orbit { to { transform:rotate(360deg); } }
+
+  /* ═══ SECTION 2: OUR HONEY (PRODUCTS) ══ */
+  .products {
+    background: var(--black);
+    text-align:center;
+  }
+  .products-grid {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:24px; margin-top:64px;
+  }
+  .product-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius:20px;
+    padding:48px 32px;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 var(--glass-shine);
+    transition: transform 0.4s, box-shadow 0.4s, border-color 0.4s;
+    position:relative; overflow:hidden;
+  }
+  .product-card::after {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 60%);
+    opacity:0; transition:opacity 0.4s;
+  }
+  .product-card:hover {
+    transform:translateY(-8px);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 40px rgba(201,168,76,0.12);
+    border-color: rgba(201,168,76,0.5);
+  }
+  .product-card:hover::after { opacity:1; }
+  .product-icon { font-size:56px; margin-bottom:24px; }
+  .product-name {
+    font-family:'Cinzel', serif;
+    font-size:18px; color:var(--gold); margin-bottom:12px;
+  }
+  .product-desc {
+    font-family:'Cormorant Garamond', serif;
+    font-size:16px; line-height:1.7;
+    color:rgba(245,237,214,0.65);
+  }
+  .product-price {
+    font-family:'Cormorant Garamond', serif;
+    font-size:28px; font-style:italic;
+    color:var(--gold-light); margin-top:20px;
+  }
+
+  /* ═══ SECTION 3: HEALTH & BENEFITS ══ */
+  .benefits {
+    background: linear-gradient(180deg, #080600 0%, #0D0A00 100%);
+  }
+  .benefits-intro {
+    max-width:700px; margin-bottom:80px;
+  }
+  .benefits-grid {
+    display:grid; grid-template-columns:repeat(2,1fr);
+    gap:2px;
+  }
+  .benefit-panel {
+    padding:60px 48px;
+    position:relative; overflow:hidden;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(201,168,76,0.1);
+    transition: background 0.4s;
+  }
+  .benefit-panel:hover { background: rgba(201,168,76,0.04); }
+  .benefit-panel:nth-child(1) { border-radius:20px 0 0 0; }
+  .benefit-panel:nth-child(2) { border-radius:0 20px 0 0; }
+  .benefit-panel:nth-child(3) { border-radius:0 0 0 20px; }
+  .benefit-panel:nth-child(4) { border-radius:0 0 20px 0; }
+  .benefit-number {
+    font-family:'Cinzel', serif;
+    font-size:72px; font-weight:700;
+    color:rgba(201,168,76,0.08);
+    position:absolute; top:20px; right:32px;
+    line-height:1;
+  }
+  .benefit-icon { font-size:36px; margin-bottom:20px; }
+  .benefit-title {
+    font-family:'Cinzel', serif;
+    font-size:20px; color:var(--gold-light);
+    margin-bottom:16px;
+  }
+  .benefit-text {
+    font-family:'Cormorant Garamond', serif;
+    font-size:17px; line-height:1.8;
+    color:rgba(245,237,214,0.65);
+  }
+
+  /* Nutrition strip */
+  .nutrition-strip {
+    margin-top:60px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius:20px;
+    padding:48px;
+    backdrop-filter:blur(16px);
+    display:grid; grid-template-columns:repeat(5,1fr);
+    gap:0; text-align:center;
+  }
+  .nutrition-item {
+    padding:20px;
+    border-right: 1px solid rgba(201,168,76,0.1);
+  }
+  .nutrition-item:last-child { border-right:none; }
+  .nutrition-val {
+    font-family:'Cinzel', serif;
+    font-size:36px; font-weight:700;
+    color:var(--gold); line-height:1;
+    margin-bottom:8px;
+  }
+  .nutrition-unit {
+    font-size:11px; color:var(--gold-dim);
+    display:block; margin-bottom:4px;
+  }
+  .nutrition-label {
+    font-size:11px; letter-spacing:0.2em; text-transform:uppercase;
+    color:rgba(245,237,214,0.4);
+  }
+
+  /* ═══ SECTION 4: THE FARM ══ */
+  .farm {
+    background: var(--black);
+    display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:start;
+  }
+  .farm-stats {
+    display:grid; grid-template-columns:1fr 1fr; gap:16px;
+    margin-top:48px;
+  }
+  .stat-glass {
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:16px;
+    padding:32px 24px;
+    backdrop-filter:blur(12px);
+    box-shadow:inset 0 1px 0 var(--glass-shine), 0 20px 40px rgba(0,0,0,0.4);
+    transition:transform 0.3s, border-color 0.3s;
+  }
+  .stat-glass:hover { transform:scale(1.03); border-color:rgba(201,168,76,0.4); }
+  .stat-val {
+    font-family:'Cinzel', serif;
+    font-size:42px; font-weight:700;
+    color:var(--gold); line-height:1;
+  }
+  .stat-label {
+    font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
+    color:rgba(245,237,214,0.4); margin-top:8px; display:block;
+  }
+  .farm-right { padding-top:20px; }
+  .farm-feature {
+    display:flex; gap:20px; align-items:flex-start;
+    margin-bottom:32px; padding:24px;
+    border-left:2px solid rgba(201,168,76,0.2);
+    transition:border-color 0.3s;
+  }
+  .farm-feature:hover { border-left-color:var(--gold); }
+  .farm-feature-icon { font-size:28px; flex-shrink:0; margin-top:4px; }
+  .farm-feature-title {
+    font-family:'Cinzel', serif;
+    font-size:16px; color:var(--gold);
+    margin-bottom:8px;
+  }
+  .farm-feature-text {
+    font-family:'Cormorant Garamond', serif;
+    font-size:16px; line-height:1.7;
+    color:rgba(245,237,214,0.6);
+  }
+
+  /* ═══ SECTION 5: CONTACT ══ */
+  .contact {
+    background: linear-gradient(135deg, #080600 0%, var(--deep) 100%);
+    text-align:center;
+  }
+  .contact-card {
+    max-width:720px; margin:64px auto 0;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(201,168,76,0.2);
+    border-radius:28px;
+    padding:72px 64px;
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    box-shadow:
+      0 60px 120px rgba(0,0,0,0.7),
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 0 80px rgba(201,168,76,0.06);
+    position:relative; overflow:hidden;
+  }
+  .contact-card::before {
+    content:''; position:absolute;
+    top:-100px; left:50%; transform:translateX(-50%);
+    width:300px; height:300px;
+    background:radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .contact-details {
+    display:flex; flex-direction:column; gap:24px;
+    margin:40px 0;
+  }
+  .contact-row {
+    display:flex; align-items:center; justify-content:center;
+    gap:16px; font-family:'Cormorant Garamond', serif;
+    font-size:19px; color:rgba(245,237,214,0.75);
+  }
+  .contact-row-icon { font-size:22px; }
+  .contact-row strong {
+    color:var(--gold); font-style:italic; font-weight:400;
+  }
+  .contact-made {
+    font-size:11px; letter-spacing:0.35em; text-transform:uppercase;
+    color:var(--gold-dim); margin-top:32px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding:40px 60px;
+    display:flex; justify-content:space-between; align-items:center;
+    border-top:1px solid rgba(201,168,76,0.1);
+  }
+  footer .logo {
+    font-family:'Cinzel', serif;
+    font-size:11px; letter-spacing:0.4em;
+    color:var(--gold-dim);
+  }
+  footer .copy {
+    font-size:11px; letter-spacing:0.2em;
+    color:rgba(245,237,214,0.2);
+  }
+  footer .tagline-footer {
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic; font-size:14px;
+    color:var(--gold-dim);
+  }
+
+  /* Scroll animations */
+  .reveal {
+    opacity:0; transform:translateY(40px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-delay-1 { transition-delay:0.15s; }
+  .reveal-delay-2 { transition-delay:0.3s; }
+  .reveal-delay-3 { transition-delay:0.45s; }
+
+  /* Responsive simplifications */
+  @media (max-width:900px) {
+    nav { padding:20px 24px; }
+    .nav-links { display:none; }
+    section { padding:80px 24px; }
+    .about, .farm { grid-template-columns:1fr; gap:48px; }
+    .products-grid { grid-template-columns:1fr; }
+    .benefits-grid { grid-template-columns:1fr; }
+    .nutrition-strip { grid-template-columns:repeat(2,1fr); gap:0; }
+    .nutrition-item:nth-child(2) { border-right:none; }
+    footer { flex-direction:column; gap:16px; text-align:center; }
+    .contact-card { padding:48px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">🐝 PIGO Honeybees</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#honey">Our Honey</a></li>
+    <li><a href="#benefits">Benefits</a></li>
+    <li><a href="#farm">The Farm</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════ HERO ══════════════════════ -->
+<section class="hero">
+  <div class="hex-grid"></div>
+  <div class="hero-orb"></div>
+
+  <!-- Particles -->
+  <div class="particles" id="particles"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">100% Natural · Made in Nigeria · Since the Beginning</p>
+    <h1 class="hero-title">
+      <span>PIGO</span>
+      <span>HONEY<span style="color:var(--amber);">BEES</span></span>
+      <span class="sub">Premium Raw Honey</span>
+    </h1>
+    <p class="hero-tagline">"Live Healthy. Take Honey."</p>
+    <div class="glass-pill">
+      <button class="btn-primary">Shop Now</button>
+      <button class="btn-ghost">Our Story</button>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════ ABOUT ══════════════════════ -->
+<section class="about" id="about">
+  <div class="about-visual">
+    <!-- Orbit rings -->
+    <div class="orbit-ring" style="width:380px;height:380px;top:50%;left:50%;margin:-190px 0 0 -190px;animation-duration:25s;"></div>
+    <div class="orbit-ring" style="width:480px;height:480px;top:50%;left:50%;margin:-240px 0 0 -240px;animation-duration:40s;animation-direction:reverse;"></div>
+
+    <div class="product-glass-card reveal">
+      <div class="card-bee-icon">🐝</div>
+      <div class="card-brand">PIGO<br>HONEYBEES</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:rgba(245,237,214,0.5);font-size:14px;margin-top:6px;">Live Healthy. Take Honey.</div>
+      <div class="card-vol">75 cl · Premium Grade</div>
+      <div class="card-badges">
+        <span class="badge">No Preservatives</span>
+        <span class="badge">No Added Sugar</span>
+        <span class="badge">No Flavours</span>
+        <span class="badge">100% Natural</span>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="section-label reveal">Our Story</p>
+    <h2 class="section-title reveal reveal-delay-1">Born From Nature,<br>Crafted With Purpose</h2>
+    <div class="section-body reveal reveal-delay-2">
+      <p style="margin-bottom:20px;">PIGO Honeybees is a premium artisanal honey farm rooted in the rich, fertile landscapes of Nigeria. Founded on a belief that nature's most perfect food deserves to be protected in its purest form, we raise our colonies with patience, knowledge, and deep respect for the hive.</p>
+      <p style="margin-bottom:20px;">Our bees forage across undisturbed meadows and wildflower fields, producing honey of extraordinary depth — golden in colour, complex in flavour, alive with enzymes and natural goodness that no industrial process could replicate.</p>
+      <p>Every jar of PIGO honey carries the story of ten thousand flights, a thousand flowers, and one unwavering commitment: <em style="color:var(--gold);">no preservatives, no added flavours, no added sugar.</em> Just honey, exactly as nature intended.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════ PRODUCTS ══════════════════════ -->
+<section class="products" id="honey">
+  <p class="section-label reveal" style="justify-content:center;">Our Collection</p>
+  <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">The Honey</h2>
+  <p class="section-body reveal reveal-delay-2" style="max-width:600px;margin:0 auto;text-align:center;">Three expressions of Nigeria's finest. Each one raw, unfiltered, and bursting with the character of the land it came from.</p>
+
+  <div class="products-grid">
+    <div class="product-card reveal">
+      <div class="product-icon">🍯</div>
+      <div class="product-name">Classic Raw Honey</div>
+      <p class="product-desc">Our signature. Amber gold, smooth on the palate with warm floral notes and a long, sweet finish. Cold-extracted to preserve every living enzyme and antioxidant. The everyday luxury your household deserves.</p>
+      <div class="product-price">75 cl</div>
+    </div>
+    <div class="product-card reveal reveal-delay-1">
+      <div class="product-icon">🌿</div>
+      <div class="product-name">Wildflower Reserve</div>
+      <p class="product-desc">Harvested from hives set among Nigeria's most biodiverse wildflower corridors. Each batch is seasonally distinct — a living record of the flowers that bloomed that year. Rich, complex, and utterly irreplaceable.</p>
+      <div class="product-price">75 cl</div>
+    </div>
+    <div class="product-card reveal reveal-delay-2">
+      <div class="product-icon">✨</div>
+      <div class="product-name">Creamed Honey</div>
+      <p class="product-desc">The same pure PIGO honey, carefully whipped to a smooth, spreadable texture with a velvety consistency. Perfect on warm bread, stirred into tea, or taken straight from the spoon as nature's finest indulgence.</p>
+      <div class="product-price">75 cl</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════ BENEFITS ══════════════════════ -->
+<section class="benefits" id="benefits">
+  <div class="benefits-intro">
+    <p class="section-label reveal">Nutritional & Medical Benefits</p>
+    <h2 class="section-title reveal reveal-delay-1">What Honey<br>Does for You</h2>
+    <p class="section-body reveal reveal-delay-2">Raw honey is one of humanity's oldest medicines. Modern science has confirmed what ancient healers always knew — this golden liquid is a nutritional and therapeutic powerhouse unlike anything else on earth.</p>
+  </div>
+
+  <div class="benefits-grid">
+    <div class="benefit-panel reveal">
+      <div class="benefit-number">01</div>
+      <div class="benefit-icon">🛡️</div>
+      <h3 class="benefit-title">Immune System Fortification</h3>
+      <p class="benefit-text">Raw honey is dense with antioxidants — flavonoids, phenolic acids, and hydrogen peroxide — that combat free radicals and reduce oxidative stress. Regular consumption has been shown to strengthen immune response, reduce inflammation, and support the body's natural defence mechanisms against seasonal illness and chronic disease.</p>
+    </div>
+    <div class="benefit-panel reveal reveal-delay-1">
+      <div class="benefit-number">02</div>
+      <div class="benefit-icon">❤️</div>
+      <h3 class="benefit-title">Cardiovascular Health</h3>
+      <p class="benefit-text">Studies indicate that raw honey may help lower LDL (bad) cholesterol while raising HDL (good) cholesterol. Its polyphenols have been linked to reduced risk of heart disease. Used as a substitute for refined sugar, honey supports healthier blood sugar regulation and may help reduce triglyceride levels over time.</p>
+    </div>
+    <div class="benefit-panel reveal reveal-delay-2">
+      <div class="benefit-number">03</div>
+      <div class="benefit-icon">🌙</div>
+      <h3 class="benefit-title">Natural Energy & Sleep Aid</h3>
+      <p class="benefit-text">Honey provides a steady, sustained release of glucose to the liver, fuelling the brain through the night without sugar spikes. A spoonful before bed promotes the natural release of melatonin, supporting deeper and more restorative sleep cycles. Athletes use raw honey as a natural pre- and post-exercise energy source.</p>
+    </div>
+    <div class="benefit-panel reveal reveal-delay-3">
+      <div class="benefit-number">04</div>
+      <div class="benefit-icon">🌿</div>
+      <h3 class="benefit-title">Digestive & Wound Healing</h3>
+      <p class="benefit-text">Raw honey contains prebiotics that nourish beneficial gut bacteria, improving digestion and reducing symptoms of IBS and gastric ulcers. Applied topically, its antimicrobial and anti-inflammatory properties make it a clinically recognised wound healer — used in hospitals worldwide to treat burns, cuts, and skin infections.</p>
+    </div>
+  </div>
+
+  <!-- Nutrition Strip -->
+  <div class="nutrition-strip reveal">
+    <div class="nutrition-item">
+      <div class="nutrition-val">250</div>
+      <span class="nutrition-unit">kcal</span>
+      <div class="nutrition-label">Calories</div>
+    </div>
+    <div class="nutrition-item">
+      <div class="nutrition-val">0g</div>
+      <span class="nutrition-unit">total</span>
+      <div class="nutrition-label">Fat</div>
+    </div>
+    <div class="nutrition-item">
+      <div class="nutrition-val">30g</div>
+      <span class="nutrition-unit">total</span>
+      <div class="nutrition-label">Carbohydrates</div>
+    </div>
+    <div class="nutrition-item">
+      <div class="nutrition-val">2mg</div>
+      <span class="nutrition-unit">per 100g</span>
+      <div class="nutrition-label">Cholesterol</div>
+    </div>
+    <div class="nutrition-item">
+      <div class="nutrition-val">0g</div>
+      <span class="nutrition-unit">added</span>
+      <div class="nutrition-label">Sugar Added</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════ THE FARM ══════════════════════ -->
+<section class="farm" id="farm">
+  <div>
+    <p class="section-label reveal">The Land</p>
+    <h2 class="section-title reveal reveal-delay-1">Our Farm,<br>Our Hives,<br>Our Promise</h2>
+    <p class="section-body reveal reveal-delay-2" style="margin-bottom:16px;">Nestled along the Lake Coast of Ozalhodo in Challa, Manio Turf, the PIGO Honeybees farm sits on some of the most pristine and biodiverse land in Nigeria. Far from industrial agriculture and pesticide-heavy crops, our bees work in a clean, thriving ecosystem.</p>
+    <p class="section-body reveal reveal-delay-2" style="margin-bottom:48px;">We practice ethical, sustainable beekeeping — never over-harvesting, always leaving the colony with sufficient reserves, and nurturing queen health through seasonal monitoring and natural colony management.</p>
+
+    <div class="farm-stats reveal reveal-delay-3">
+      <div class="stat-glass">
+        <div class="stat-val">50+</div>
+        <span class="stat-label">Active Hives</span>
+      </div>
+      <div class="stat-glass">
+        <div class="stat-val">4M+</div>
+        <span class="stat-label">Bees in Colony</span>
+      </div>
+      <div class="stat-glass">
+        <div class="stat-val">100%</div>
+        <span class="stat-label">Natural Process</span>
+      </div>
+      <div class="stat-glass">
+        <div class="stat-val">0</div>
+        <span class="stat-label">Additives Used</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="farm-right">
+    <div class="farm-feature reveal">
+      <div class="farm-feature-icon">🌺</div>
+      <div>
+        <div class="farm-feature-title">Wildflower Foraging Zones</div>
+        <p class="farm-feature-text">Our bees roam freely across dedicated wildflower corridors planted and maintained year-round. Daisy, clover, acacia, and native bush flowers provide the rich and varied nectar diet that gives PIGO honey its complex, layered character.</p>
+      </div>
+    </div>
+    <div class="farm-feature reveal reveal-delay-1">
+      <div class="farm-feature-icon">🏡</div>
+      <div>
+        <div class="farm-feature-title">Hand-Harvested, Cold-Extracted</div>
+        <p class="farm-feature-text">Every comb is harvested by hand during the peak of each season. We use cold-extraction methods — no heat, no filtration — preserving the full spectrum of enzymes, pollens, and natural antibiotics that raw honey is prized for worldwide.</p>
+      </div>
+    </div>
+    <div class="farm-feature reveal reveal-delay-2">
+      <div class="farm-feature-icon">♻️</div>
+      <div>
+        <div class="farm-feature-title">Regenerative & Ethical Practice</div>
+        <p class="farm-feature-text">We are committed to sustainable beekeeping. No antibiotics, no artificial queen-rearing hormones, and zero pesticide use on or around our land. Our bees are partners, not production units — and we treat them accordingly.</p>
+      </div>
+    </div>
+    <div class="farm-feature reveal reveal-delay-3">
+      <div class="farm-feature-icon">📦</div>
+      <div>
+        <div class="farm-feature-title">Premium Packaging, Zero Compromise</div>
+        <p class="farm-feature-text">Each 75cl bottle is individually filled, sealed with a hand-stamped cork, and inspected before dispatch. Our black-and-gold packaging reflects the quality inside — built for the table, worthy of a gift.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════ CONTACT ══════════════════════ -->
+<section class="contact" id="contact">
+  <p class="section-label reveal" style="justify-content:center;">Find Us</p>
+  <h2 class="section-title reveal reveal-delay-1">Order &amp; Enquiries</h2>
+  <p class="section-body reveal reveal-delay-2" style="max-width:500px;margin:0 auto;">We welcome wholesale enquiries, retail partnerships, and direct orders. Come visit the farm, or reach us directly — we'd love to share our honey with you.</p>
+
+  <div class="contact-card reveal reveal-delay-1">
+    <div style="font-family:'Cinzel',serif;font-size:24px;color:var(--gold);margin-bottom:8px;">PIGO Honeybees</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:rgba(245,237,214,0.5);font-size:16px;">Premium Honey Farm · Nigeria</div>
+
+    <div class="contact-details">
+      <div class="contact-row">
+        <span class="contact-row-icon">📍</span>
+        <span>Tln 1 Lake Coast Ozalhodo, Challa, <strong>Manio Turf, Nigeria</strong></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-row-icon">📞</span>
+        <span>Tel: <strong>+234 781 377 8409</strong></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-row-icon">🌐</span>
+        <span>www.<strong>pigohoneybees</strong>.com.ng</span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-row-icon">🐝</span>
+        <span>Wholesale &amp; retail enquiries welcome</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-primary">Call Us Now</button>
+      <button class="btn-ghost">Get Directions</button>
+    </div>
+
+    <div class="contact-made">Made in Nigeria · 100% Natural · Est. Challa, Manio Turf</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">PIGO HONEYBEES</div>
+  <div class="tagline-footer">"Live Healthy. Take Honey."</div>
+  <div class="copy">© 2025 PIGO Honeybees. All rights reserved.</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+  function animateRing(){
+    rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+  document.querySelectorAll('button,a').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='56px'; ring.style.height='56px'; });
+    el.addEventListener('mouseleave',()=>{ cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; });
+  });
+
+  // Particles
+  const pContainer = document.getElementById('particles');
+  for(let i=0;i<30;i++){
+    const p = document.createElement('div');
+    p.className='particle';
+    const size=Math.random()*4+1;
+    p.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;bottom:${Math.random()*20}%;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*8}s;opacity:0;`;
+    pContainer.appendChild(p);
+  }
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.12});
+  reveals.forEach(r=>observer.observe(r));
+</script>
+</body>
+</html>

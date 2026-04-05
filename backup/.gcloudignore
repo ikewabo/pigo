@@ -1,0 +1,15 @@
+.gcloudignore
+.git
+.gitignore
+node_modules/
+__pycache__/
+images/0314(1).mp4
+images/0314(2).mp4
+images/0314(3).mp4
+images/0314.mp4
+images/PIGOHERO.mp4
+images/Pigo Bee Last.mp4
+images/Pigo Bee.mp4
+images/Pigo-Final-4K.mp4
+images/pigo final.mp4
+images/pigo-ad-4k.mp4
