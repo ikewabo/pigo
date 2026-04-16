@@ -687,6 +687,14 @@ img {
 
 /* Basic mobile responsive */
 @media (max-width: 968px) {
+    /* Progressive mobile background video fade and top flush alignment */
+    .site-bg-video {
+        object-fit: contain;
+        object-position: top center;
+        mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    }
+
     .hero-glass-panel {
         padding: 1.5rem;
     }
