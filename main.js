@@ -147,25 +147,67 @@ function createParticle(container) {
  * Hero Video Player Logic
  */
 function initHeroGifSequence() {
-    const video = document.getElementById('hero-bg-video');
-    if (!video) return;
+    const bgImg = document.getElementById('hero-bg-anim');
+    if (!bgImg) return;
 
+    const totalFrames = 208; // 17.3 seconds * 12 fps = 208 frames
+    const images = [];
+    let loadedImages = 0;
+    
+    // We reveal after a few loops
     let loops = 0;
     let revealed = false;
-    let previousTime = 0;
-
-    video.addEventListener('timeupdate', () => {
-        const currentTime = video.currentTime;
+    let currentFrame = 0;
+    
+    // Preload images
+    for (let i = 1; i <= totalFrames; i++) {
+        const img = new Image();
+        const frameNumber = i.toString().padStart(4, '0');
+        img.src = `images/frames/frame_${frameNumber}.webp`;
+        images.push(img);
         
-        // When the video loops, the currentTime drops back near 0
-        if (previousTime > 0 && currentTime < previousTime - 2) {
-            loops++;
-            if (loops >= 2 && !revealed) {
-                revealed = true;
-                const panel = document.querySelector('.hero-glass-panel');
-                if (panel) panel.classList.add('revealed');
+        img.onload = () => {
+            loadedImages++;
+            // Set initial frame when first image is loaded
+            if (loadedImages === 1) {
+                bgImg.src = images[0].src;
+            }
+        };
+    }
+
+    let lastTime = 0;
+    const fps = 12;
+    const interval = 1000 / fps;
+
+    function playAnimation(timestamp) {
+        if (!lastTime) lastTime = timestamp;
+        
+        // Start playing when we have some frames
+        if (loadedImages > 5) {
+            const deltaTime = timestamp - lastTime;
+            
+            if (deltaTime >= interval) {
+                // Ensure the frame is loaded before swapping
+                if (images[currentFrame].complete) {
+                    bgImg.src = images[currentFrame].src;
+                    
+                    currentFrame++;
+                    if (currentFrame >= totalFrames) {
+                         currentFrame = 0;
+                         loops++;
+                         if (loops >= 1 && !revealed) { // Reveal earlier for 12fps
+                             revealed = true;
+                             const panel = document.querySelector('.hero-glass-panel');
+                             if (panel) panel.classList.add('revealed');
+                         }
+                    }
+                }
+                lastTime = timestamp - (deltaTime % interval);
             }
         }
-        previousTime = currentTime;
-    });
+        
+        requestAnimationFrame(playAnimation);
+    }
+    
+    requestAnimationFrame(playAnimation);
 }
