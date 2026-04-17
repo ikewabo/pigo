@@ -1525,3 +1525,18 @@ img {
     opacity: 1 !important;
     transform: translateY(0) !important;
 }
+
+/* Voice Agent Widget Global Placement */
+elevenlabs-convai {
+    position: fixed !important;
+    bottom: 2rem !important;
+    right: 2rem !important;
+    z-index: 99999 !important;
+}
+
+@media (max-width: 968px) {
+    elevenlabs-convai {
+        bottom: 1rem !important;
+        right: 1rem !important;
+    }
+}
