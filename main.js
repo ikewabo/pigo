@@ -217,7 +217,8 @@ function initHeroGifSequence() {
 
 function initFarmGifSequence() {
     const bgImg = document.getElementById('farm-bg-anim');
-    if (!bgImg) return;
+    const parallaxImg = document.getElementById('parallax-bg-anim');
+    if (!bgImg && !parallaxImg) return;
 
     const totalFrames = 96;
     const images = [];
@@ -233,7 +234,8 @@ function initFarmGifSequence() {
         img.onload = () => {
             loadedImages++;
             if (loadedImages === 1) {
-                bgImg.src = images[0].src;
+                if (bgImg) bgImg.src = images[0].src;
+                if (parallaxImg) parallaxImg.src = images[0].src;
             }
         };
     }
@@ -250,7 +252,8 @@ function initFarmGifSequence() {
             
             if (deltaTime >= interval) {
                 if (images[currentFrame].complete) {
-                    bgImg.src = images[currentFrame].src;
+                    if (bgImg) bgImg.src = images[currentFrame].src;
+                    if (parallaxImg) parallaxImg.src = images[currentFrame].src;
                     currentFrame++;
                     if (currentFrame >= totalFrames) {
                          currentFrame = 0;
