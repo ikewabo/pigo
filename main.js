@@ -150,7 +150,9 @@ function initHeroGifSequence() {
     const bgImg = document.getElementById('hero-bg-anim');
     if (!bgImg) return;
 
-    const totalFrames = 208; // 17.3 seconds * 12 fps = 208 frames
+    const isMobile = window.innerWidth <= 968;
+    const totalFrames = isMobile ? 93 : 208;
+    const frameDir = isMobile ? 'images/frames_mobile' : 'images/frames';
     const images = [];
     let loadedImages = 0;
     
@@ -163,7 +165,7 @@ function initHeroGifSequence() {
     for (let i = 1; i <= totalFrames; i++) {
         const img = new Image();
         const frameNumber = i.toString().padStart(4, '0');
-        img.src = `images/frames/frame_${frameNumber}.webp`;
+        img.src = `${frameDir}/frame_${frameNumber}.webp`;
         images.push(img);
         
         img.onload = () => {
