@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallax();
     initParticles();
     initHeroGifSequence();
+    initFarmGifSequence();
 });
 
 /**
@@ -202,6 +203,57 @@ function initHeroGifSequence() {
                              const panel = document.querySelector('.hero-glass-panel');
                              if (panel) panel.classList.add('revealed');
                          }
+                    }
+                }
+                lastTime = timestamp - (deltaTime % interval);
+            }
+        }
+        
+        requestAnimationFrame(playAnimation);
+    }
+    
+    requestAnimationFrame(playAnimation);
+}
+
+function initFarmGifSequence() {
+    const bgImg = document.getElementById('farm-bg-anim');
+    if (!bgImg) return;
+
+    const totalFrames = 96;
+    const images = [];
+    let loadedImages = 0;
+    let currentFrame = 0;
+    
+    for (let i = 1; i <= totalFrames; i++) {
+        const img = new Image();
+        const frameNumber = i.toString().padStart(4, '0');
+        img.src = `images/frames_farm/frame_${frameNumber}.webp`;
+        images.push(img);
+        
+        img.onload = () => {
+            loadedImages++;
+            if (loadedImages === 1) {
+                bgImg.src = images[0].src;
+            }
+        };
+    }
+
+    let lastTime = 0;
+    const fps = 12;
+    const interval = 1000 / fps;
+
+    function playAnimation(timestamp) {
+        if (!lastTime) lastTime = timestamp;
+        
+        if (loadedImages > 5) {
+            const deltaTime = timestamp - lastTime;
+            
+            if (deltaTime >= interval) {
+                if (images[currentFrame].complete) {
+                    bgImg.src = images[currentFrame].src;
+                    currentFrame++;
+                    if (currentFrame >= totalFrames) {
+                         currentFrame = 0;
                     }
                 }
                 lastTime = timestamp - (deltaTime % interval);
